@@ -10,7 +10,6 @@ $(".list-info-table .form-control").change(function(e) {
 $("#clearListSearchCond-table").click(function() {
     $(".table-diplay-info").bootstrapTable('refresh');
 });
-$("#listViewSearch input").on("change", function(e) { console.log(e); });
 //tabel视图中使用bootstrap-table来显示数据
 $.extend($.fn.bootstrapTable.defaults, {
     method: "post",
@@ -53,73 +52,21 @@ $.extend($.fn.bootstrapTable.defaults, {
     }
 });
 
-//根据数据类型获得正确的数据,默认string
-function getCurrentDataType(val, dataType) {
-    if (dataType == "" || dataType === undefined || dataType === null) {
-        dataType = "string";
-    }
-    switch (dataType) {
-        case "int": // 整形
-            val = parseInt(val);
-            break;
-        case "float": // 浮点型
-            val = parseFloat(val);
-            break;
-        case "array_int": // 整形数组
-            var a_arr = [];
-            for (var a_i = 0, a_l = val.length; a_i < a_l; a_i++) {
-                a_arr.push(parseInt(val[a_i]));
-            }
-            val = a_arr;
-            break;
-        case "arrar_float": //  浮点型数组
-            var a_arr = [];
-            for (var a_i = 0, a_l = val.length; a_i < a_l; a_i++) {
-                a_arr.push(parseFloat(val[a_i]));
-            }
-            val = a_arr;
-            break;
-    }
-    return val
-};
-
 function defaultQueryParams(params) {
     var xsrf = $("input[name ='_xsrf']");
     if (xsrf != undefined) {
         params._xsrf = xsrf[0].value;
     }
     params.action = 'table';
-    var filterCond = $("#listViewSearch .filter-condition");
+    var filterCond = $("#listViewSearch .form-control");
     var filter = {};
     // console.log(filterCond);
     //获得过滤条件
     for (var i = 0, len = filterCond.length; i < len; i++) {
         var self = filterCond[i];
-        // 处理radio数据
-        if (self.type == "radio") {
-            if ($(self).data("type") == "string") {
-                var nodeName = $("input[name ='" + self.name + "']:checked");
-                if (nodeName != undefined) {
-                    filter[self.name] = nodeName.val();
-                }
-            } else {
-                console.log("data  type is not string");
-            }
-        } else if (self.type == "checkbox") {
-            if (self.checked) {
-                filter[self.name] = true;
-            } else {
-                filter[self.name] = false;
-            }
-        } else {
-            var val = $(self).val();
-            if (val != "") {
-                // 若为null跳出此次循环
-                if (val === null) {
-                    continue;
-                }
-                filter[self.name] = getCurrentDataType(val, $(self).data("type"))
-            }
+        var val = $(self).val();
+        if (val) {
+            filter[self.name] = nodeName.val();
         }
     }
     params.filter = JSON.stringify(filter);
