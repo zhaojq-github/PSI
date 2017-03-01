@@ -1,0 +1,13 @@
+#ignore compile file
+
+
+.project
+*.exe
+*.exe~
+.vscode/
+ goERP.*
+debug
+debug~
+.idea
+logs/*.log
+/conf/app.conf
