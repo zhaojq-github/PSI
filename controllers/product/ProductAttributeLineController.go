@@ -31,19 +31,31 @@ func (ctl *ProductAttributeLineController) Post() {
 
 // Put 修改属性明细
 func (ctl *ProductAttributeLineController) Put() {
-	id := ctl.Ctx.Input.Param(":id")
-	ctl.URL = "/product/category/"
-	if idInt64, e := strconv.ParseInt(id, 10, 64); e == nil {
-		if category, err := md.GetProductAttributeLineByID(idInt64); err == nil {
-			if err := ctl.ParseForm(&category); err == nil {
+	result := make(map[string]interface{})
+	attribute := new(md.ProductAttributeLine)
+	var (
+		err error
+		id  int64
+	)
+	if err = ctl.ParseForm(attribute); err == nil {
 
-				if err := md.UpdateProductAttributeLineByID(category); err == nil {
-					ctl.Redirect(ctl.URL+id+"?action=detail", 302)
-				}
-			}
+		// 获得struct表名
+		// structName := reflect.Indirect(reflect.ValueOf(company)).Type().Name()
+		if id, err = md.UpdateProductAttributeLine(attribute, &ctl.User); err == nil {
+			result["code"] = "success"
+			result["location"] = ctl.URL + strconv.FormatInt(id, 10) + "?action=detail"
+		} else {
+			result["code"] = "failed"
+			result["message"] = "数据创建失败"
+			result["debug"] = err.Error()
 		}
 	}
-	ctl.Redirect(ctl.URL+id+"?action=edit", 302)
+	if err != nil {
+		result["code"] = "failed"
+		result["debug"] = err.Error()
+	}
+	ctl.Data["json"] = result
+	ctl.ServeJSON()
 
 }
 

@@ -1315,6 +1315,13 @@ $(function() {
                 }
             }
         },
+        StandardWeight: {
+            validators: {
+                numeric: {
+                    message: "成本价格必须为数字"
+                }
+            }
+        },
         Category: {
             validators: {
                 notEmpty: {

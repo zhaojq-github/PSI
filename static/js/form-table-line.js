@@ -199,3 +199,25 @@ $("#add-one-sale-order-line").on("click", function(e) {
         id: null
     }]);
 });
+displayTable("#product-template-attribute-table", "/product/attributeline/", [
+    { title: "全选", field: 'ID', checkbox: true, align: "center", valign: "middle" },
+    { title: "属性", field: 'Attribute', align: "left", sortable: true, order: "desc", valign: "middle" },
+    { title: "属性值", field: 'AttributeValues', align: "left", sortable: true, order: "desc", valign: "middle" }
+
+], {
+    queryParams: function(params) {
+        var xsrf = $("input[name ='_xsrf']");
+        if (xsrf.length > 0) {
+            params._xsrf = xsrf[0].value;
+        }
+        params.action = 'table';
+
+        var templateId = $("input[name ='recordID']");
+        if (templateId.length > 0) {
+            params.templateId = parseInt(templateId[0].value);
+        } else {
+            params.saleOrderId = 0;
+        }
+        return params;
+    }
+});

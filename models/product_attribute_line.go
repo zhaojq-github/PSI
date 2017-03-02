@@ -151,19 +151,14 @@ func GetAllProductAttributeLine(query map[string]interface{}, exclude map[string
 	return paginator, objArrs, err
 }
 
-// UpdateProductAttributeLineByID updates ProductAttributeLine by ID and returns error if
+// UpdateProductAttributeLine updates ProductAttributeLine by ID and returns error if
 // the record to be updated doesn't exist
-func UpdateProductAttributeLineByID(m *ProductAttributeLine) (err error) {
+func UpdateProductAttributeLine(obj *ProductAttributeLine, updateUser *User) (id int64, err error) {
 	o := orm.NewOrm()
-	v := ProductAttributeLine{ID: m.ID}
-	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
-		var num int64
-		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
-		}
-	}
-	return
+	obj.UpdateUser = updateUser
+	updateFields := []string{"UpdateUser", "UpdateDate", "Name", "Code", "Sequence"}
+	_, err = o.Update(obj, updateFields...)
+	return obj.ID, err
 }
 
 // DeleteProductAttributeLine deletes ProductAttributeLine by ID and returns error if

@@ -66,7 +66,7 @@ func (ctl *ProductTemplateController) Put() {
 	if err = ctl.ParseForm(template); err == nil {
 		// 获得struct表名
 		// structName := reflect.Indirect(reflect.ValueOf(template)).Type().Name()
-		if id, err = md.AddProductTemplate(template, &ctl.User); err == nil {
+		if id, err = md.UpdateProductTemplate(template, &ctl.User); err == nil {
 			result["code"] = "success"
 			result["location"] = ctl.URL + strconv.FormatInt(id, 10) + "?action=detail"
 		} else {
@@ -313,44 +313,45 @@ func (ctl *ProductTemplateController) PostList() {
 	filter := ctl.GetString("filter")
 	if filter != "" {
 		json.Unmarshal([]byte(filter), &filterMap)
-	}
-	// 对filterMap进行判断
-	if filterActive, ok := filterMap["Active"]; ok {
-		condAnd["Active"] = filterActive
-	}
-	if filterSaleOk, ok := filterMap["SaleOk"]; ok {
-		condAnd["SaleOk"] = filterSaleOk
-	}
-	if filterName, ok := filterMap["Name"]; ok {
-		filterName = strings.TrimSpace(filterName.(string))
-		if filterName != "" {
-			condAnd["Name.icontains"] = filterName
-		}
-	}
-	if filterDefaultCode, ok := filterMap["DefaultCode"]; ok {
 
-		filterDefaultCode = strings.TrimSpace(filterDefaultCode.(string))
-		if filterDefaultCode != "" {
-			condAnd["DefaultCode.icontains"] = filterDefaultCode
+		// 对filterMap进行判断
+		if filterActive, ok := filterMap["Active"]; ok {
+			condAnd["Active"] = filterActive
 		}
-	}
-	if filterCategory, ok := filterMap["Category"]; ok {
-		filterCategoryID := int64(filterCategory.(float64))
-		if filterCategoryID > 0 {
-			lineIdsArr := make([]int64, 0, 0)
-			lineIdsArr = append(lineIdsArr, filterCategoryID)
-			if _, arrs, err := md.GetAllChildCategorys(filterCategoryID); err == nil {
-				for _, item := range arrs {
-					lineIdsArr = append(lineIdsArr, item.ID)
-				}
+		if filterSaleOk, ok := filterMap["SaleOk"]; ok {
+			condAnd["SaleOk"] = filterSaleOk
+		}
+		if filterName, ok := filterMap["Name"]; ok {
+			filterName = strings.TrimSpace(filterName.(string))
+			if filterName != "" {
+				condAnd["Name.icontains"] = filterName
 			}
-			condAnd["Category.in"] = lineIdsArr
 		}
-	}
-	if filterProductType, ok := filterMap["ProductType"]; ok {
-		filterProductType = strings.TrimSpace(filterProductType.(string))
-		if filterProductType != "" {
-			condAnd["ProductType"] = filterProductType
+		if filterDefaultCode, ok := filterMap["DefaultCode"]; ok {
+
+			filterDefaultCode = strings.TrimSpace(filterDefaultCode.(string))
+			if filterDefaultCode != "" {
+				condAnd["DefaultCode.icontains"] = filterDefaultCode
+			}
+		}
+		if filterCategory, ok := filterMap["Category"]; ok {
+			filterCategoryID := int64(filterCategory.(float64))
+			if filterCategoryID > 0 {
+				lineIdsArr := make([]int64, 0, 0)
+				lineIdsArr = append(lineIdsArr, filterCategoryID)
+				if _, arrs, err := md.GetAllChildCategorys(filterCategoryID); err == nil {
+					for _, item := range arrs {
+						lineIdsArr = append(lineIdsArr, item.ID)
+					}
+				}
+				condAnd["Category.in"] = lineIdsArr
+			}
+		}
+		if filterProductType, ok := filterMap["ProductType"]; ok {
+			filterProductType = strings.TrimSpace(filterProductType.(string))
+			if filterProductType != "" {
+				condAnd["ProductType"] = filterProductType
+			}
 		}
 	}
 	if len(condAnd) > 0 {
