@@ -96,18 +96,7 @@
                             <label for="StandardWeight" class="col-md-4 control-label">标准重量<span>&nbsp</span></label>
                             <div class="col-md-8 spinner">
                                 <p class="p-form-control">{{if .Tp}} {{.Tp.StandardWeight}} {{end}}</p>
-
-                                <!--<input class="form-control" name="StandardWeight" type="text" {{if .Tp}} value="{{.Tp.StandardWeight}}" {{else}}value="0" {{end}} />-->
-                                <div class="spinner">
-                                    <div class="input-group-addon">
-                                        <a href="javascript:;" class="spin-up" data-spin="up"><i class="fa fa-caret-up"></i></a>
-                                    </div>
-                                    <input type="text" class="form-control text-center" value="1" data-rule="quantity">
-                                    <div class="input-group-addon">
-                                        <a href="javascript:;" class="spin-down" data-spin="down"><i class="fa fa-caret-down"></i></a>
-                                    </div>
-                                </div>
-
+                                <input class="form-control" name="StandardWeight" type="text" {{if .Tp}} value="{{.Tp.StandardWeight}}" {{else}}value="0" {{end}} />
                             </div>
                         </div>
                     </div>
@@ -175,22 +164,10 @@
     </ul>
     <div class="tab-content">
         <div class="tab-pane fade" id="attributeInfo">
-            <div class="row">
-                <div class="col-md-3">
-                    <label for="type" class="col-md-4 control-label">款式创建方式<span class="required-input">&nbsp*</span></label>
-                    <div class="col-md-8">
-                        <input class="input-radio {{if .Tp}}{{if ne  .Tp.productMethod " auto "}}checked{{end}}{{end}}" type="radio" id="productMethod-radio-1" value="auto" name="productMethod">
-                        <label class="input-radio-label" for="productMethod-radio-1">自动创建</label>
-                        <input class="input-radio {{if not .Tp}}checked{{else}}{{if eq .Tp.productMethod " hand "}}checked{{end}}{{end}}" type="radio" id="productMethod-radio-2" value="hand" name="productMethod">
-                        <label class="input-radio-label" for="productMethod-radio-2">手动触发</label>
-                    </div>
-                </div>
-            </div>
-
             <div class="row" id="display-table">
                 <div class="col-md-12">
-                    <button type="button" id="add-one-product-template-attribute" data-formid="productTemplateForm" class="btn btn-info fa fa-plus  pull-left form-table-add-line">&nbsp添加一行</button>
-                    <table id="one-product-template-attribute" data-formid="productTemplateForm" class="table table-bordered table-hover table-condensed table-striped">
+                    <button type="button" id="add-one-product-template-attribute" class="btn btn-info fa fa-plus  pull-left form-table-add-line">&nbsp添加一行</button>
+                    <table id="one-product-template-attribute" class="table table-bordered table-hover table-condensed table-striped">
                     </table>
                 </div>
             </div>
@@ -267,50 +244,6 @@
         </div>
     </div>
 </div>
-{{end}} {{if .RecordID}}
-<div class="tab-pane fade" id="productImages">
-    <!--显示已经有的图片-->
-    {{if and .Tp .Tp.BigImages}} {{range .Tp.BigImages}}
-    <div class="row">
-        <div class="col-xs-6 col-md-3">
-            <a href="#" class="thumbnail">
-                <img class="click-modal-view" src="" data-src="{{.imgSrc}}" alt="...">
-            </a>
-        </div>
-    </div>
-    {{end}} {{end}}
-    <input id="product-images" name="productImages" type="file" multiple>
-</div>
 {{end}}
 </div>
 </form>
-{{if .RecordID}}
-<div class="file-zoom-dialog modal fade" id="productImagesModal" tabindex="-1" role="dialog" aria-labelledby="productImagesModal" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="kv-zoom-actions pull-right">
-                    <!--<button type="button" class="btn btn-default btn-header-toggle btn-toggleheader" title="缩放" data-toggle="button" aria-pressed="false" autocomplete="off"><i class="glyphicon glyphicon-resize-vertical"></i></button>
-                    <button type="button" class="btn btn-default btn-fullscreen" title="全屏" data-toggle="button" aria-pressed="false" autocomplete="off"><i class="glyphicon glyphicon-fullscreen"></i></button>
-                    <button type="button" class="btn btn-default btn-borderless" title="无边界模式" data-toggle="button" aria-pressed="false" autocomplete="off"><i class="glyphicon glyphicon-resize-full"></i></button>-->
-                    <button type="button" class="btn btn-default btn-close" title="关闭当前预览" data-dismiss="modal" aria-hidden="true"><i class="glyphicon glyphicon-remove"></i></button>
-                </div>
-                <h3 class="modal-title"> <small><span class="kv-zoom-title text-primary" >[{{.Tp.DefaultCode}}]{{.Tp.Name}}</span></small></h3>
-            </div>
-            <div class="modal-body">
-                <div id="productImagesCarousel" class="carousel slide">
-                    <!-- 轮播（Carousel）指标 -->
-                    <ol class="carousel-indicators">
-                    </ol>
-                    <!-- 轮播（Carousel）项目 -->
-                    <div class="carousel-inner">
-                    </div>
-                    <!-- 轮播（Carousel）导航 -->
-                    <a type="button" class="carousel-control btn-navigate left" data-slide="prev" href="#productImagesCarousel" title="预览上一个文件"><i class="glyphicon glyphicon-triangle-left"></i></a>
-                    <a type="button" class="carousel-control  btn-navigate right" data-slide="next" href="#productImagesCarousel" title="预览上一个文件"><i class="glyphicon glyphicon-triangle-right"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{{end}}
