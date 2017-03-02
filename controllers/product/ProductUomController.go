@@ -50,55 +50,78 @@ func (ctl *ProductUomController) Get() {
 	ctl.Data["MenuProductUomActive"] = "active"
 }
 func (ctl *ProductUomController) Put() {
-	id := ctl.Ctx.Input.Param(":id")
-	ctl.URL = "/product/uom/"
-	if idInt64, e := strconv.ParseInt(id, 10, 64); e == nil {
-		if uom, err := md.GetProductUomByID(idInt64); err == nil {
-			if err := ctl.ParseForm(&uom); err == nil {
-
-				if err := md.UpdateProductUomByID(uom); err == nil {
-					ctl.Redirect(ctl.URL+id+"?action=detail", 302)
-				}
-			}
-		}
-	}
-	ctl.Redirect(ctl.URL+id+"?action=edit", 302)
-}
-
-func (ctl *ProductUomController) Validator() {
-	name := ctl.GetString("name")
-	recordID, _ := ctl.GetInt64("recordID")
-	name = strings.TrimSpace(name)
-	result := make(map[string]bool)
-	obj, err := md.GetProductUomByName(name)
-	if err != nil {
-		result["valid"] = true
-	} else {
-		if obj.Name == name {
-			if recordID == obj.ID {
-				result["valid"] = true
-			} else {
-				result["valid"] = false
-			}
-
-		} else {
-			result["valid"] = true
-		}
-
-	}
-	ctl.Data["json"] = result
-	ctl.ServeJSON()
-}
-func (ctl *ProductUomController) PostCreate() {
-
 	result := make(map[string]interface{})
-	postData := ctl.GetString("postData")
 	uom := new(md.ProductUom)
 	var (
 		err error
 		id  int64
 	)
-	if err = json.Unmarshal([]byte(postData), uom); err == nil {
+	if err = ctl.ParseForm(uom); err == nil {
+		// 获得struct表名
+		// structName := reflect.Indirect(reflect.ValueOf(city)).Type().Name()
+		if id, err = md.UpdateProductUom(uom, &ctl.User); err == nil {
+			result["code"] = "success"
+			result["location"] = ctl.URL + strconv.FormatInt(id, 10) + "?action=detail"
+		} else {
+
+			result["code"] = "failed"
+			result["message"] = "数据更新失败"
+			result["debug"] = err.Error()
+		}
+	}
+	if err != nil {
+		result["code"] = "failed"
+		result["debug"] = err.Error()
+	}
+	ctl.Data["json"] = result
+	ctl.ServeJSON()
+}
+
+// Validator Validator
+func (ctl *ProductUomController) Validator() {
+	query := make(map[string]interface{})
+	exclude := make(map[string]interface{})
+	cond := make(map[string]map[string]interface{})
+	condAnd := make(map[string]interface{})
+	fields := make([]string, 0, 0)
+	sortby := make([]string, 0, 0)
+	order := make([]string, 0, 0)
+
+	recordID, _ := ctl.GetInt64("recordID")
+	result := make(map[string]bool)
+	if name := strings.TrimSpace(ctl.GetString("Name")); name != "" {
+		condAnd["Name"] = name
+	}
+	if len(condAnd) > 0 {
+		cond["and"] = condAnd
+	}
+	if _, arrs, err := md.GetAllProductUom(query, exclude, cond, fields, sortby, order, 0, 2); err == nil {
+		if len(arrs) == 1 {
+			if arrs[0].ID == recordID {
+				result["valid"] = true
+			} else {
+				result["valid"] = false
+			}
+		} else {
+			result["valid"] = true
+		}
+	} else {
+		result["valid"] = true
+	}
+	ctl.Data["json"] = result
+	ctl.ServeJSON()
+}
+
+// PostCreate post request create product uom
+func (ctl *ProductUomController) PostCreate() {
+
+	result := make(map[string]interface{})
+	uom := new(md.ProductUom)
+	var (
+		err error
+		id  int64
+	)
+	if err = ctl.ParseForm(uom); err == nil {
 		// 获得struct表名
 		// structName := reflect.Indirect(reflect.ValueOf(uom)).Type().Name()
 		if id, err = md.AddProductUom(uom, &ctl.User); err == nil {
@@ -116,18 +139,6 @@ func (ctl *ProductUomController) PostCreate() {
 	}
 	ctl.Data["json"] = result
 	ctl.ServeJSON()
-
-	if err := ctl.ParseForm(uom); err == nil {
-		if uomCategID, err := ctl.GetInt64("category"); err == nil {
-			if category, err := md.GetProductUomCategByID(uomCategID); err == nil {
-				uom.Category = category
-				if id, err := md.AddProductUom(uom, &ctl.User); err == nil {
-					ctl.Redirect("/product/uom/"+strconv.FormatInt(id, 10)+"?action=detail", 302)
-				}
-			}
-		}
-	}
-	ctl.Get()
 
 }
 func (ctl *ProductUomController) productUomList(query map[string]interface{}, exclude map[string]interface{}, condMap map[string]map[string]interface{}, fields []string, sortby []string, order []string, offset int64, limit int64) (map[string]interface{}, error) {

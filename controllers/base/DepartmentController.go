@@ -139,24 +139,37 @@ func (ctl *DepartmentController) Create() {
 }
 
 func (ctl *DepartmentController) Validator() {
-	name := strings.TrimSpace(ctl.GetString("Name"))
+	query := make(map[string]interface{})
+	exclude := make(map[string]interface{})
+	cond := make(map[string]map[string]interface{})
+	condAnd := make(map[string]interface{})
+	fields := make([]string, 0, 0)
+	sortby := make([]string, 0, 0)
+	order := make([]string, 0, 0)
+
 	recordID, _ := ctl.GetInt64("recordID")
 	result := make(map[string]bool)
-	obj, err := md.GetDepartmentByName(name)
-	if err != nil {
-		result["valid"] = true
-	} else {
-		if obj.Name == name {
-			if recordID == obj.ID {
+	if parent, err := ctl.GetInt64("Parent"); err == nil {
+		query["Parent.Id"] = parent
+	}
+	if name := strings.TrimSpace(ctl.GetString("Name")); name != "" {
+		condAnd["Name"] = name
+	}
+	if len(condAnd) > 0 {
+		cond["and"] = condAnd
+	}
+	if _, arrs, err := md.GetAllDepartment(query, exclude, cond, fields, sortby, order, 0, 2); err == nil {
+		if len(arrs) == 1 {
+			if arrs[0].ID == recordID {
 				result["valid"] = true
 			} else {
 				result["valid"] = false
 			}
-
 		} else {
 			result["valid"] = true
 		}
-
+	} else {
+		result["valid"] = true
 	}
 	ctl.Data["json"] = result
 	ctl.ServeJSON()
@@ -241,6 +254,7 @@ func (ctl *DepartmentController) PostList() {
 		order = append(order, "desc")
 
 	}
+
 	if result, err := ctl.departmentList(query, exclude, cond, fields, sortby, order, offset, limit); err == nil {
 		ctl.Data["json"] = result
 	}

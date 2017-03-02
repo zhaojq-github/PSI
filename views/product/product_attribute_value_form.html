@@ -12,7 +12,8 @@
         <a href="{{.URL}}" class="btn btn-info fa fa-list pull-left">&nbsp列表</a>
     </div>
     {{ .xsrf }} {{if .RecordID}}
-    <input type="hidden"  name="recordID" id="record-id" class="{{.FormField}}" value="{{.RecordID}}"> {{end}}
+    <input type="hidden" name="_method" value="PUT">
+    <input type="hidden" name="recordID" id="record-id" class="{{.FormField}}" value="{{.RecordID}}"> {{end}}
     <fieldset>
         <legend>基本信息</legend>
         <div class="row">
@@ -22,7 +23,7 @@
                     <div class="col-md-8">
                         <p class="p-form-control">{{if .ProductAttValue}} {{.ProductAttValue.Attribute.Name}} {{end}}</p>
 
-                        <select  name="AttributeID" id="productAttributeID" autofocus class="{{.FormField}} form-control select-product-attribute">
+                        <select name="Attribute" id="productAttributeID" autofocus class="{{.FormField}} form-control select-product-attribute">
                             {{if .ProductAttValue}}
                             <option value="{{.ProductAttValue.Attribute.ID}}" selected="selected">{{.ProductAttValue.Attribute.Name}}</option> 
                             {{end}}

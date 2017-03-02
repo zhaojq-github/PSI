@@ -13,24 +13,22 @@ import (
 
 //ProductUom 产品单位
 type ProductUom struct {
-	ID         int64            `orm:"column(id);pk;auto" json:"id"`         //主键
-	CreateUser *User            `orm:"rel(fk);null" json:"-"`                //创建者
-	UpdateUser *User            `orm:"rel(fk);null" json:"-"`                //最后更新者
-	CreateDate time.Time        `orm:"auto_now_add;type(datetime)" json:"-"` //创建时间
-	UpdateDate time.Time        `orm:"auto_now;type(datetime)" json:"-"`     //最后更新时间
-	Name       string           `orm:"unique" json:"name"`                   //计量单位名称
-	Active     bool             `orm:"default(true)" json:"active"`          //有效
-	Category   *ProductUomCateg `orm:"rel(fk)"`                              //计量单位类别
-	Factor     float64          `json:"Factor"`                              //比率
-	FactorInv  float64          `json:"FactorInv"`                           //更大比率
-	Rounding   float64          `json:"Rounding"`                            //舍入精度
-	Type       int64            `json:"Type"`                                //类型
-	Symbol     string           `json:"Symbol"`                              //符号，后置
-	TypeName   string           `orm:"-"`                                    //仅用于前端显示
+	ID         int64            `orm:"column(id);pk;auto" json:"id" form:"recordID"` //主键
+	CreateUser *User            `orm:"rel(fk);null" json:"-"`                        //创建者
+	UpdateUser *User            `orm:"rel(fk);null" json:"-"`                        //最后更新者
+	CreateDate time.Time        `orm:"auto_now_add;type(datetime)" json:"-"`         //创建时间
+	UpdateDate time.Time        `orm:"auto_now;type(datetime)" json:"-"`             //最后更新时间
+	Name       string           `orm:"unique" json:"name" form:"Name"`               //计量单位名称
+	Active     bool             `orm:"default(true)" json:"active" form:"Active"`    //有效
+	Category   *ProductUomCateg `orm:"rel(fk)"`                                      //计量单位类别
+	Factor     float64          `json:"Factor" form:"Factor"`                        //比率
+	FactorInv  float64          `json:"FactorInv" form:"FactorInv"`                  //更大比率
+	Rounding   float64          `json:"Rounding" form:"Rounding"`                    //舍入精度
+	Type       int64            `json:"Type" form:"Type"`                            //类型
+	Symbol     string           `json:"Symbol" form:"Symbol"`                        //符号，后置
+	TypeName   string           `orm:"-" form:"TypeName"`                            //仅用于前端显示
 
-	FormAction   string   `orm:"-" json:"FormAction"`   //非数据库字段，用于表示记录的增加，修改
-	ActionFields []string `orm:"-" json:"ActionFields"` //需要操作的字段,用于update时
-	CategoryID   int64    `orm:"-" json:"Category"`
+	CategoryID int64 `orm:"-" json:"Category" form:"Category"`
 }
 
 func init() {
@@ -53,6 +51,10 @@ func AddProductUom(obj *ProductUom, addUser *User) (id int64, err error) {
 	}()
 	if errBegin != nil {
 		return 0, errBegin
+	}
+	if obj.CategoryID > 0 {
+		obj.Category = new(ProductUomCateg)
+		obj.Category.ID = obj.CategoryID
 	}
 	id, err = o.Insert(obj)
 	if err == nil {
@@ -184,19 +186,14 @@ func GetAllProductUom(query map[string]interface{}, exclude map[string]interface
 	return paginator, objArrs, err
 }
 
-// UpdateProductUomByID updates ProductUom by ID and returns error if
+// UpdateProductUom updates ProductUom by ID and returns error if
 // the record to be updated doesn't exist
-func UpdateProductUomByID(m *ProductUom) (err error) {
+func UpdateProductUom(obj *ProductUom, updateUser *User) (id int64, err error) {
 	o := orm.NewOrm()
-	v := ProductUom{ID: m.ID}
-	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
-		var num int64
-		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
-		}
-	}
-	return
+	updateFields := []string{"UpdateUser", "UpdateDate", "Name", "Category", "Active", "Factor", "FactorInv", "Rounding", "Type", "Symbol", "TypeName"}
+	obj.UpdateUser = updateUser
+	_, err = o.Update(obj, updateFields...)
+	return obj.ID, err
 }
 
 // DeleteProductUom deletes ProductUom by ID and returns error if

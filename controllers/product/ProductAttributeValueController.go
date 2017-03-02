@@ -27,23 +27,31 @@ func (ctl *ProductAttributeValueController) Post() {
 	}
 }
 func (ctl *ProductAttributeValueController) Put() {
-	id := ctl.Ctx.Input.Param(":id")
-	ctl.URL = "/product/attributevalue/"
-	if idInt64, e := strconv.ParseInt(id, 10, 64); e == nil {
-		if attrValue, err := md.GetProductAttributeValueByID(idInt64); err == nil {
-			if err := ctl.ParseForm(&attrValue); err == nil {
-				if attributeID, err := ctl.GetInt64("productAttributeID"); err == nil {
-					if attribute, err := md.GetProductAttributeByID(attributeID); err == nil {
-						attrValue.Attribute = attribute
-					}
-				}
-				if err := md.UpdateProductAttributeValueByID(attrValue); err == nil {
-					ctl.Redirect(ctl.URL+id+"?action=detail", 302)
-				}
-			}
+	result := make(map[string]interface{})
+	attributeValue := new(md.ProductAttributeValue)
+	var (
+		err error
+		id  int64
+	)
+	if err = ctl.ParseForm(attributeValue); err == nil {
+
+		// 获得struct表名
+		// structName := reflect.Indirect(reflect.ValueOf(company)).Type().Name()
+		if id, err = md.UpdateProductAttributeValue(attributeValue, &ctl.User); err == nil {
+			result["code"] = "success"
+			result["location"] = ctl.URL + strconv.FormatInt(id, 10) + "?action=detail"
+		} else {
+			result["code"] = "failed"
+			result["message"] = "数据创建失败"
+			result["debug"] = err.Error()
 		}
 	}
-	ctl.Redirect(ctl.URL+id+"?action=edit", 302)
+	if err != nil {
+		result["code"] = "failed"
+		result["debug"] = err.Error()
+	}
+	ctl.Data["json"] = result
+	ctl.ServeJSON()
 
 }
 func (ctl *ProductAttributeValueController) Get() {
@@ -102,14 +110,13 @@ func (ctl *ProductAttributeValueController) Detail() {
 }
 func (ctl *ProductAttributeValueController) PostCreate() {
 	result := make(map[string]interface{})
-	postData := ctl.GetString("postData")
 	attrValue := new(md.ProductAttributeValue)
 
 	var (
 		err error
 		id  int64
 	)
-	if err = json.Unmarshal([]byte(postData), attrValue); err == nil {
+	if err = ctl.ParseForm(attrValue); err == nil {
 		// 获得struct表名
 		// structName := reflect.Indirect(reflect.ValueOf(attrValue)).Type().Name()
 		if id, err = md.AddProductAttributeValue(attrValue, &ctl.User); err == nil {
@@ -129,25 +136,41 @@ func (ctl *ProductAttributeValueController) PostCreate() {
 	ctl.ServeJSON()
 }
 func (ctl *ProductAttributeValueController) Validator() {
-	name := ctl.GetString("name")
-	name = strings.TrimSpace(name)
+
+	query := make(map[string]interface{})
+	exclude := make(map[string]interface{})
+	cond := make(map[string]map[string]interface{})
+	condAnd := make(map[string]interface{})
+	fields := make([]string, 0, 0)
+	sortby := make([]string, 0, 0)
+	order := make([]string, 0, 0)
+
 	recordID, _ := ctl.GetInt64("recordID")
 	result := make(map[string]bool)
-	obj, err := md.GetProductAttributeValueByName(name)
-	if err != nil {
-		result["valid"] = true
-	} else {
-		if obj.Name == name {
-			if recordID == obj.ID {
+	if attributeID, err := ctl.GetInt64("attributeId"); err == nil {
+		query["Attribute.Id"] = attributeID
+	}
+	if name := strings.TrimSpace(ctl.GetString("Name")); name != "" {
+		condAnd["Name"] = name
+	}
+	if len(condAnd) > 0 {
+		cond["and"] = condAnd
+	}
+
+	if _, arrs, err := md.GetAllProductAttributeValue(query, exclude, cond, fields, sortby, order, 0, 2); err == nil {
+		if len(arrs) == 1 {
+			if arrs[0].ID == recordID {
 				result["valid"] = true
 			} else {
+
 				result["valid"] = false
 			}
-
 		} else {
 			result["valid"] = true
 		}
+	} else {
 
+		result["valid"] = true
 	}
 	ctl.Data["json"] = result
 	ctl.ServeJSON()

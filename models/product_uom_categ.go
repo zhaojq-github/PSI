@@ -13,16 +13,13 @@ import (
 
 //ProductUomCateg 产品单位类别
 type ProductUomCateg struct {
-	ID         int64         `orm:"column(id);pk;auto" json:"id"`         //主键
-	CreateUser *User         `orm:"rel(fk);null" json:"-"`                //创建者
-	UpdateUser *User         `orm:"rel(fk);null" json:"-"`                //最后更新者
-	CreateDate time.Time     `orm:"auto_now_add;type(datetime)" json:"-"` //创建时间
-	UpdateDate time.Time     `orm:"auto_now;type(datetime)" json:"-"`     //最后更新时间
-	Name       string        `orm:"unique" json:"Name"`                   //计量单位分类
-	Uoms       []*ProductUom `orm:"reverse(many)"`                        //计量单位
-
-	FormAction   string   `orm:"-" json:"FormAction"`   //非数据库字段，用于表示记录的增加，修改
-	ActionFields []string `orm:"-" json:"ActionFields"` //需要操作的字段,用于update时
+	ID         int64         `orm:"column(id);pk;auto" json:"id" form:"recordID"` //主键
+	CreateUser *User         `orm:"rel(fk);null" json:"-"`                        //创建者
+	UpdateUser *User         `orm:"rel(fk);null" json:"-"`                        //最后更新者
+	CreateDate time.Time     `orm:"auto_now_add;type(datetime)" json:"-"`         //创建时间
+	UpdateDate time.Time     `orm:"auto_now;type(datetime)" json:"-"`             //最后更新时间
+	Name       string        `orm:"unique" json:"Name" form:"Name"`               //计量单位分类
+	Uoms       []*ProductUom `orm:"reverse(many)"`                                //计量单位
 }
 
 func init() {
@@ -181,17 +178,14 @@ func GetAllProductUomCateg(query map[string]interface{}, exclude map[string]inte
 
 // UpdateProductUomCategByID updates ProductUomCateg by ID and returns error if
 // the record to be updated doesn't exist
-func UpdateProductUomCategByID(m *ProductUomCateg) (err error) {
+func UpdateProductUomCateg(obj *ProductUomCateg, updateUser *User) (id int64, err error) {
 	o := orm.NewOrm()
-	v := ProductUomCateg{ID: m.ID}
-	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
-		var num int64
-		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
-		}
-	}
-	return
+
+	updateFields := []string{"UpdateUser", "UpdateDate", "Name"}
+
+	obj.UpdateUser = updateUser
+	_, err = o.Update(obj, updateFields...)
+	return obj.ID, err
 }
 
 // DeleteProductUomCateg deletes ProductUomCateg by ID and returns error if

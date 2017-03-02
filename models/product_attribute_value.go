@@ -13,22 +13,20 @@ import (
 
 //ProductAttributeValue 产品属性值
 type ProductAttributeValue struct {
-	ID            int64             `orm:"column(id);pk;auto" json:"id"`         //主键
-	CreateUser    *User             `orm:"rel(fk);null" json:"-"`                //创建者
-	UpdateUser    *User             `orm:"rel(fk);null" json:"-"`                //最后更新者
-	CreateDate    time.Time         `orm:"auto_now_add;type(datetime)" json:"-"` //创建时间
-	UpdateDate    time.Time         `orm:"auto_now;type(datetime)" json:"-"`     //最后更新时间
-	Name          string            `orm:"unique" json:"Name"`                   //产品属性名称
-	Attribute     *ProductAttribute `orm:"rel(fk)"`                              //属性
-	Products      []*ProductProduct `orm:"rel(m2m)"`                             //产品规格
-	ProductsCount int64             `orm:"default(0)"`                           //产品规格数量
-	PriceExtra    float64           `orm:"default(0)"`                           //额外价格
-	// Prices     *ProductAttributePrice `orm:"reverse(many)"`
-	Sequence int32 `json:"Sequence"` //序列
+	ID            int64             `orm:"column(id);pk;auto" json:"id" form:"recordID"` //主键
+	CreateUser    *User             `orm:"rel(fk);null" json:"-"`                        //创建者
+	UpdateUser    *User             `orm:"rel(fk);null" json:"-"`                        //最后更新者
+	CreateDate    time.Time         `orm:"auto_now_add;type(datetime)" json:"-"`         //创建时间
+	UpdateDate    time.Time         `orm:"auto_now;type(datetime)" json:"-"`             //最后更新时间
+	Name          string            `orm:"unique" json:"Name" form:"Name"`               //产品属性名称
+	Attribute     *ProductAttribute `orm:"rel(fk)"`                                      //属性
+	Products      []*ProductProduct `orm:"rel(m2m)"`                                     //产品规格
+	ProductsCount int64             `orm:"default(0)"`                                   //产品规格数量
+	PriceExtra    float64           `orm:"default(0)" form:"PriceExtra"`                 //额外价格
+	Sequence      int32             `json:"Sequence" form:"Sequence"`                    //序列
 
-	FormAction   string   `orm:"-" json:"FormAction"`   //非数据库字段，用于表示记录的增加，修改
-	ActionFields []string `orm:"-" json:"ActionFields"` //需要操作的字段,用于update时
-	AttributeID  int64    `orm:"-" json:"AttributeID"`  //属性
+	AttributeID int64 `orm:"-" json:"AttributeID" form:"Attribute"` //属性
+
 }
 
 func init() {
@@ -44,7 +42,7 @@ func UpdateProductAttributeValueProductsCount(obj *ProductAttributeValue, update
 	count++
 	obj.ProductsCount = count
 	obj.UpdateUser = updateUser
-	o.Update(obj, "ProductsCount", "UpdateUser")
+	o.Update(obj, "ProductsCount", "UpdateUser", "UpdateDate")
 }
 
 // AddProductAttributeValue insert a new ProductAttributeValue into database and returns
@@ -65,7 +63,8 @@ func AddProductAttributeValue(obj *ProductAttributeValue, addUser *User) (id int
 		return 0, errBegin
 	}
 	if obj.AttributeID > 0 {
-		obj.Attribute, _ = GetProductAttributeByID(obj.AttributeID)
+		obj.Attribute = new(ProductAttribute)
+		obj.Attribute.ID = obj.AttributeID
 	}
 	id, err = o.Insert(obj)
 	if err == nil {
@@ -199,19 +198,18 @@ func GetAllProductAttributeValue(query map[string]interface{}, exclude map[strin
 	return paginator, objArrs, err
 }
 
-// UpdateProductAttributeValueByID updates ProductAttributeValue by ID and returns error if
+// UpdateProductAttributeValue updates ProductAttributeValue by ID and returns error if
 // the record to be updated doesn't exist
-func UpdateProductAttributeValueByID(m *ProductAttributeValue) (err error) {
+func UpdateProductAttributeValue(obj *ProductAttributeValue, updateUser *User) (id int64, err error) {
 	o := orm.NewOrm()
-	v := ProductAttributeValue{ID: m.ID}
-	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
-		var num int64
-		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
-		}
+	obj.UpdateUser = updateUser
+	if obj.AttributeID > 0 {
+		obj.Attribute = new(ProductAttribute)
+		obj.Attribute.ID = obj.AttributeID
 	}
-	return
+	updateFields := []string{"UpdateUser", "UpdateDate", "Name", "Attribute", "Sequence", "PriceExtra"}
+	_, err = o.Update(obj, updateFields...)
+	return obj.ID, err
 }
 
 // DeleteProductAttributeValue deletes ProductAttributeValue by ID and returns error if

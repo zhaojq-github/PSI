@@ -168,6 +168,9 @@ func (ctl *AddressDistrictController) Validator() {
 	if name := strings.TrimSpace(ctl.GetString("Name")); name != "" {
 		condAnd["Name"] = name
 	}
+	if len(condAnd) > 0 {
+		cond["and"] = condAnd
+	}
 	if _, arrs, err := md.GetAllAddressDistrict(query, exclude, cond, fields, sortby, order, 0, 2); err == nil {
 		if len(arrs) == 1 {
 			if arrs[0].ID == recordID {

@@ -171,18 +171,63 @@ func (ctl *UserController) PostList() {
 	filter := ctl.GetString("filter")
 	if filter != "" {
 		json.Unmarshal([]byte(filter), &filterMap)
-	}
-	// 对filterMap进行判断
-	if filterActive, ok := filterMap["Active"]; ok {
-		condAnd["Active"] = filterActive
-	}
-	if filterSaleOk, ok := filterMap["SaleOk"]; ok {
-		condAnd["SaleOk"] = filterSaleOk
-	}
-	if filterName, ok := filterMap["Name"]; ok {
-		filterName = strings.TrimSpace(filterName.(string))
-		if filterName != "" {
-			condAnd["Name.icontains"] = filterName
+
+		// 对filterMap进行判断
+		if filterActive, ok := filterMap["Active"]; ok {
+			condAnd["Active"] = filterActive
+		}
+		if filterSaleOk, ok := filterMap["SaleOk"]; ok {
+			condAnd["SaleOk"] = filterSaleOk
+		}
+		if filterName, ok := filterMap["Name"]; ok {
+			filterName = strings.TrimSpace(filterName.(string))
+			if filterName != "" {
+				condAnd["Name.icontains"] = filterName
+			}
+		}
+		if email, ok := filterMap["Email"]; ok {
+			email = strings.TrimSpace(email.(string))
+			if email != "" {
+				condAnd["Email.icontains"] = email
+			}
+		}
+		if Qq, ok := filterMap["Qq"]; ok {
+			Qq = strings.TrimSpace(Qq.(string))
+			if Qq != "" {
+				condAnd["Qq.icontains"] = Qq
+			}
+		}
+		if mobile, ok := filterMap["Mobile"]; ok {
+			mobile = strings.TrimSpace(mobile.(string))
+			if mobile != "" {
+				condAnd["Mobile.icontains"] = mobile
+			}
+		}
+		if wechat, ok := filterMap["Wechat"]; ok {
+			wechat = strings.TrimSpace(wechat.(string))
+			if wechat != "" {
+				condAnd["Wechat.icontains"] = wechat
+			}
+		}
+		if nameZh, ok := filterMap["NameZh"]; ok {
+			nameZh = strings.TrimSpace(nameZh.(string))
+			if nameZh != "" {
+				condAnd["NameZh.icontains"] = nameZh
+			}
+		}
+		if active, ok := filterMap["Active"]; ok {
+			active = active.(bool)
+			if active == true {
+				condAnd["Active"] = true
+			}
+		} else {
+			condAnd["Active"] = false
+		}
+		if isAdmin, ok := filterMap["IsAdmin"]; ok {
+			isAdmin = isAdmin.(bool)
+			if isAdmin == true {
+				condAnd["IsAdmin"] = true
+			}
 		}
 	}
 	if len(condAnd) > 0 {

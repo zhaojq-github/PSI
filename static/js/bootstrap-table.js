@@ -7,6 +7,9 @@
 $(".list-info-table .form-control").change(function(e) {
     $(".table-diplay-info").bootstrapTable('refresh');
 });
+$('#listViewSearch .form-checkbox').on('ifChanged', function(event) {
+    $(".table-diplay-info").bootstrapTable('refresh');
+});
 $("#clearListSearchCond-table").click(function() {
     $(".table-diplay-info").bootstrapTable('refresh');
 });
@@ -60,14 +63,20 @@ function defaultQueryParams(params) {
     params.action = 'table';
     var filterCond = $("#listViewSearch .form-control");
     var filter = {};
-    // console.log(filterCond);
     //获得过滤条件
     for (var i = 0, len = filterCond.length; i < len; i++) {
         var self = filterCond[i];
-        var val = $(self).val();
-        if (val) {
-            filter[self.name] = nodeName.val();
+        if ($(self).hasClass("form-checkbox")) {
+            if ($(self).is(':checked')) {
+                filter[self.name] = true;
+            }
+        } else {
+            var val = $(self).val();
+            if (val) {
+                filter[self.name] = val;
+            }
         }
+
     }
     params.filter = JSON.stringify(filter);
     return params;

@@ -1155,10 +1155,14 @@ $(function() {
                         if (xsrf.length > 0) {
                             params._xsrf = xsrf[0].value;
                         }
-                        var attributeId = $("select[name='productAttributeID']");
+                        var attributeId = $("select[name='Attribute']");
 
                         if (attributeId.length > 0) {
+
                             attributeId = attributeId[0].value;
+                            if (!attributeId) {
+                                toastr.error("请先选择<strong>属性</strong>", "错误");
+                            }
                             params.attributeId = attributeId;
                         }
                         return params
