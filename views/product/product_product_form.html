@@ -197,7 +197,7 @@
                                 <label for="secondSaleUom" class="col-md-4 control-label label-start">销售单位2<span>&nbsp</span></label>
                                 <div class="col-md-8">
                                     <p class="p-form-control">{{if and .Product .Product.SecondSaleUom}} {{.Product.SecondSaleUom.Name}} {{end}}</p>
-                                    <selectname="SecondSaleUom" id="secondSaleUom" class="{{.FormField}} form-control select-product-uom">
+                                    <select name="SecondSaleUom" id="secondSaleUom" class="{{.FormField}} form-control select-product-uom">
                                         {{if and .Product .Product.SecondSaleUom}}
                                         <option value="{{.Product.SecondSaleUom.ID}}" selected="selected">{{.Product.SecondSaleUom.Name}}</option>
                                         {{end}}

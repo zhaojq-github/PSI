@@ -58,13 +58,12 @@ func (ctl *ProductTemplateController) Get() {
 // Put 修改产品款式
 func (ctl *ProductTemplateController) Put() {
 	result := make(map[string]interface{})
-	postData := ctl.GetString("postData")
 	template := new(md.ProductTemplate)
 	var (
 		err error
 		id  int64
 	)
-	if err = json.Unmarshal([]byte(postData), template); err == nil {
+	if err = ctl.ParseForm(template); err == nil {
 		// 获得struct表名
 		// structName := reflect.Indirect(reflect.ValueOf(template)).Type().Name()
 		if id, err = md.AddProductTemplate(template, &ctl.User); err == nil {
@@ -141,13 +140,13 @@ func (ctl *ProductTemplateController) ProductTemplateAttributes() {
 }
 func (ctl *ProductTemplateController) PostCreate() {
 	result := make(map[string]interface{})
-	postData := ctl.GetString("postData")
 	template := new(md.ProductTemplate)
 	var (
 		err error
 		id  int64
 	)
-	if err = json.Unmarshal([]byte(postData), template); err == nil {
+	if err = ctl.ParseForm(template); err == nil {
+
 		// 获得struct表名
 		// structName := reflect.Indirect(reflect.ValueOf(template)).Type().Name()
 		if id, err = md.AddProductTemplate(template, &ctl.User); err == nil {
