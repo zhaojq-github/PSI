@@ -104,6 +104,34 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="ProductType" class="col-md-4 control-label label-start">产品类型<span class="required-input">&nbsp*</span></label>
+                            <div class="col-md-8">
+                                <p class="p-form-control"> {{if .Tp}} {{.Tp.ProductType}}{{end}}</p>
+                                <select name="Type" id="type" class="{{.FormField}} form-control select-product-type">
+                             {{if .Uom}} 
+                            <option value="{{.Tp.ProductType}}" selected="selected">{{.Tp.ProductType}}</option>
+                            {{else}}<option value="stock" selected="selected">库存商品</option>{{end}} 
+                        </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="ProductMethod" class="col-md-4 control-label label-start">款式创建方式<span class="required-input">&nbsp*</span></label>
+                            <div class="col-md-8">
+                                <p class="p-form-control"> {{if .Tp}} {{.Tp.ProductMethod}}{{end}}</p>
+                                <select name="Type" id="type" class="{{.FormField}} form-control select-product-method">
+                             {{if .Uom}} 
+                            <option value="{{.Tp.ProductMethod}}" selected="selected">{{.Tp.ProductMethod}}</option>
+                            {{else}}<option value="hand" selected="selected">自动</option>{{end}} 
+                        </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-md-6">
                 <div class="row">

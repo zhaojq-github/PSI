@@ -46,8 +46,8 @@ type ProductTemplate struct {
 	BigImages             []*ProductImage         `orm:"reverse(many)"`                                       //产品款式图片
 	MidImages             []*ProductImage         `orm:"reverse(many)"`                                       //产品款式图片
 	SmallImages           []*ProductImage         `orm:"reverse(many)"`                                       //产品款式图片
-	ProductType           string                  `orm:"default()" form:"ProductType"`                        //产品类型
-	ProductMethod         string                  `orm:"default()" json:"ProductMethod" form:"ProductMethod"` //产品规格创建方式
+	ProductType           string                  `orm:"default()" form:"ProductType"`                        //产品类型 stock consume service
+	ProductMethod         string                  `orm:"default()" json:"ProductMethod" form:"ProductMethod"` //产品规格创建方式 auto hand 
 	PackagingDependTemp   bool                    `orm:"default(true)" form:"PackagingDependTemp"`            //根据款式打包
 	PurchaseDependTemp    bool                    `orm:"default(true)" form:"PurchaseDependTemp"`             //根据款式采购，ture一个供应商可以供应所有的款式
 	CompanyID             int64                   `orm:"-" json:"Company" form:"Company"`

@@ -169,6 +169,9 @@ func (ctl *CompanyController) Validator() {
 	if name := strings.TrimSpace(ctl.GetString("Name")); name != "" {
 		condAnd["Name"] = name
 	}
+	if code := strings.TrimSpace(ctl.GetString("Code")); code != "" {
+		condAnd["Code"] = code
+	}
 	if len(condAnd) > 0 {
 		cond["and"] = condAnd
 	}

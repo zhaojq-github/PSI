@@ -134,6 +134,8 @@
  select2AjaxData(".select-stock-location", '/stock/location/?action=search'); //库位
  selectStaticData(".select-stock-picking-type-code", [{ id: 'outgoing', name: '出库' }, { id: 'incoming', name: '入库' }, { id: 'internal', name: '内部调拨' }]); // 产品类型
  selectStaticData(".select-product-uom-category-type", [{ id: 1, name: '小于参考计量单位' }, { id: 2, name: '参考计量单位' }, { id: 3, name: '大于参考计量单位' }]); // 产品类型
+ selectStaticData(".select-product-type", [{ id: "stock", name: '库存商品' }, { id: "consume", name: '消耗品' }, { id: "service", name: '服务' }]);
+ selectStaticData(".select-product-method", [{ id: "hand", name: '手动' }, { id: "auto", name: '自动' }]);
  // 库位类型
  selectStaticData(".select-stock-location-usage", [
      { id: "supplier", name: '供应商库位' },
