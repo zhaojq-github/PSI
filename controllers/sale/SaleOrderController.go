@@ -7,7 +7,8 @@ import (
 	md "goERP/models"
 	"strconv"
 	"strings"
-	// uuid "code.google.com/p/go-uuid/uuid"
+
+	uuid "code.google.com/p/go-uuid/uuid"
 )
 
 // SaleOrderController sale order
@@ -97,7 +98,7 @@ func (ctl *SaleOrderController) Edit() {
 // Create display sale order create page
 func (ctl *SaleOrderController) Create() {
 	ctl.Data["Action"] = "create"
-	// ctl.Data["UUID"] = uuid.NewUUID()
+	ctl.Data["UUID"] = uuid.NewUUID()
 	ctl.Data["FormField"] = "form-create"
 	ctl.Data["Readonly"] = false
 	ctl.PageAction = "创建"
@@ -122,7 +123,7 @@ func (ctl *SaleOrderController) PostCreate() {
 		err error
 		id  int64
 	)
-	
+
 	if err = json.Unmarshal([]byte(postData), saleOrder); err == nil {
 		// 获得struct表名
 		// structName := reflect.Indirect(reflect.ValueOf(category)).Type().Name()

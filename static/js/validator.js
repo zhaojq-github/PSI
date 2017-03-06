@@ -69,7 +69,7 @@ var BootstrapValidator = function(selector, needValidatorFields) {
                 toastr.error("请求失败<br>" + response.debug, "错误");
                 return;
             } else {
-                toastr.success("<h3>请求成功</h3><br><a href='" + response.location + "'>1秒后跳转</a>");
+                // toastr.success("<h3>请求成功</h3><br><a href='" + response.location + "'>1秒后跳转</a>");
                 // setTimeout(function() { window.location = response.location; }, 1000);
             }
         });

@@ -201,10 +201,43 @@ $("#add-one-sale-order-line").on("click", function(e) {
 });
 displayTable("#product-template-attribute-table", "/product/attributeline/", [
     { title: "全选", field: 'ID', checkbox: true, align: "center", valign: "middle" },
-    { title: "属性", field: 'Attribute', align: "left", sortable: true, order: "desc", valign: "middle" },
-    { title: "属性值", field: 'AttributeValues', align: "left", sortable: true, order: "desc", valign: "middle" }
+    {
+        title: "属性",
+        field: 'Attribute',
+        align: "left",
+        sortable: true,
+        order: "desc",
+        valign: "middle",
+        formatter: function(value, row, index) {
+            var html = "<select class='form-table-product-template-attributte'>";
+            if (row.Attribute && row.Attribute.id) {
+                html += +"<option value=" + row.Attribute.id + ">" + row.Attribute.Name + "</option>";
+            }
+            html += "</select>";
+            return html;
+        }
+    },
+    {
+        title: "属性值",
+        field: 'AttributeValues',
+        align: "left",
+        sortable: true,
+        order: "desc",
+        valign: "middle",
+        formatter: function(value, row, index) {
+            var html = "<select class='form-table-product-template-attributte-value'>";
+            if (row.AttributeValues && row.AttributeValues.length > 0) {
+
+            }
+            html += "</select>";
+            return html;
+        }
+    }
 
 ], {
+    onPostBody: function() {
+        select2AjaxData(".form-table-product-template-attributte", '/product/attribute/?action=search')
+    },
     queryParams: function(params) {
         var xsrf = $("input[name ='_xsrf']");
         if (xsrf.length > 0) {
@@ -220,4 +253,15 @@ displayTable("#product-template-attribute-table", "/product/attributeline/", [
         }
         return params;
     }
+});
+//产品款式的属性增加一行
+$("#add-one-product-template-attribute").on("click", function(e) {
+    $("#product-template-attribute-table").bootstrapTable("prepend", [{
+        ID: null,
+        Attribute: {
+            id: null,
+            Name: '',
+        },
+        AttributeValues: [{ id: null, Name: "" }]
+    }]);
 });

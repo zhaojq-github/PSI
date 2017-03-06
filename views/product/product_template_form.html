@@ -26,6 +26,7 @@
     {{ .xsrf }} {{if .RecordID}}
     <input type="hidden" name="_method" value="PUT">
     <input type="hidden" name="recordID" id="record-id" value="{{.RecordID}}"> {{end}}
+    <input type="hidden" name="uuid" id="uuid" value="{{.UUID}}">
     <fieldset>
         <div class="row">
             <div class="col-md-6">
@@ -44,17 +45,17 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="active" class="col-md-4 control-label ">有效</label>
+                            <label for="Active" class="col-md-4 control-label ">有效</label>
                             <div class="col-md-8 ">
-                                <input name="active" id="active" class="form-control form-checkbox" checked="checked" type="checkbox">
+                                <input name="Active" id="Active" class="form-control form-checkbox" checked="checked" type="checkbox">
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="saleok" class="col-md-4 control-label ">可销售</label>
+                            <label for="SaleOk" class="col-md-4 control-label ">可销售</label>
                             <div class="col-md-8 ">
-                                <input name="saleok" id="saleok" class="form-control form-checkbox" checked="checked" type="checkbox">
+                                <input name="SaleOk" id="SaleOk" class="form-control form-checkbox" checked="checked" type="checkbox">
                             </div>
                         </div>
                     </div>
@@ -110,7 +111,7 @@
                             <label for="ProductType" class="col-md-4 control-label label-start">产品类型<span class="required-input">&nbsp*</span></label>
                             <div class="col-md-8">
                                 <p class="p-form-control"> {{if .Tp}} {{.Tp.ProductType}}{{end}}</p>
-                                <select name="Type" id="type" class="{{.FormField}} form-control select-product-type">
+                                <select name="ProductType" id="ProductType" class="{{.FormField}} form-control select-product-type">
                              {{if .Uom}} 
                             <option value="{{.Tp.ProductType}}" selected="selected">{{.Tp.ProductType}}</option>
                             {{else}}<option value="stock" selected="selected">库存商品</option>{{end}} 
@@ -123,7 +124,7 @@
                             <label for="ProductMethod" class="col-md-4 control-label label-start">款式创建方式<span class="required-input">&nbsp*</span></label>
                             <div class="col-md-8">
                                 <p class="p-form-control"> {{if .Tp}} {{.Tp.ProductMethod}}{{end}}</p>
-                                <select name="Type" id="type" class="{{.FormField}} form-control select-product-method">
+                                <select name="ProductMethod" id="ProductMethod" class="{{.FormField}} form-control select-product-method">
                              {{if .Uom}} 
                             <option value="{{.Tp.ProductMethod}}" selected="selected">{{.Tp.ProductMethod}}</option>
                             {{else}}<option value="hand" selected="selected">自动</option>{{end}} 

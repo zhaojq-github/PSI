@@ -6,6 +6,8 @@ import (
 	"goERP/controllers/base"
 	md "goERP/models"
 
+	"code.google.com/p/go-uuid/uuid"
+
 	"strconv"
 	"strings"
 )
@@ -52,6 +54,8 @@ func (ctl *ProductTemplateController) Get() {
 	b.WriteString(ctl.PageAction)
 	ctl.Data["PageName"] = b.String()
 	ctl.Data["URL"] = ctl.URL
+	ctl.Data["UUID"] = uuid.NewUUID()
+
 	ctl.Data["MenuProductTemplateActive"] = "active"
 }
 
