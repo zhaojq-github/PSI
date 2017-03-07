@@ -104,6 +104,10 @@ func GetProductAttributeValueByName(name string) (obj *ProductAttributeValue, er
 // GetAllProductAttributeValue retrieves all ProductAttributeValue matches certain condition. Returns empty list if
 // no records exist
 func GetAllProductAttributeValue(query map[string]interface{}, exclude map[string]interface{}, condMap map[string]map[string]interface{}, fields []string, sortby []string, order []string, offset int64, limit int64) (utils.Paginator, []ProductAttributeValue, error) {
+	fmt.Println(query)
+	fmt.Println(exclude)
+	fmt.Println(condMap)
+
 	var (
 		objArrs   []ProductAttributeValue
 		paginator utils.Paginator
@@ -188,6 +192,7 @@ func GetAllProductAttributeValue(query map[string]interface{}, exclude map[strin
 
 	qs = qs.OrderBy(sortFields...)
 	if cnt, err := qs.Count(); err == nil {
+		fmt.Println(cnt)
 		if cnt > 0 {
 			paginator = utils.GenPaginator(limit, offset, cnt)
 			if num, err = qs.Limit(limit, offset).All(&objArrs, fields...); err == nil {
@@ -195,6 +200,8 @@ func GetAllProductAttributeValue(query map[string]interface{}, exclude map[strin
 			}
 		}
 	}
+	fmt.Println(objArrs)
+
 	return paginator, objArrs, err
 }
 

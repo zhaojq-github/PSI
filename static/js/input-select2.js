@@ -48,9 +48,7 @@
      if (xsrf.length > 0) {
          selectParams._xsrf = xsrf[0].value;
      }
-     if ($(this).length > 0 && $(this)[0].nodeName == "SELECT") {
-         selectParams.exclude = $(this).val();
-     }
+
      return selectParams
  }
  var selectStaticData = function(selector, data) {

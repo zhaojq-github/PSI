@@ -3,6 +3,7 @@ package product
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"goERP/controllers/base"
 	md "goERP/models"
 	"strconv"
@@ -235,6 +236,10 @@ func (ctl *ProductAttributeValueController) PostList() {
 		sortby = append(sortby, "Id")
 		order = append(order, "desc")
 	}
+	fmt.Println(query)
+	fmt.Println(exclude)
+	fmt.Println(cond)
+
 	if result, err := ctl.productAttributeValueList(query, exclude, cond, fields, sortby, order, offset, limit); err == nil {
 		ctl.Data["json"] = result
 	}

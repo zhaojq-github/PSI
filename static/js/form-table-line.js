@@ -1,3 +1,18 @@
+// 删除某一行
+var formTreeLineActionRemove = function() {
+    $(".form-tree-line-action-remove").on('click', function(e) {
+        e.preventDefault();
+        var adjustTr = e.currentTarget;
+        for (var i = 0; i < 5; i++) {
+            if (adjustTr.nodeName != "TR") {
+                adjustTr = adjustTr.parentNode;
+            } else {
+                $(adjustTr).addClass("danger");
+            }
+        }
+    })
+};
+formTreeLineActionRemove();
 displayTable("#form-table-sale-order-line", "/sale/order/line", [
     { title: "全选", field: 'ID', checkbox: true, align: "center", valign: "middle" },
     { title: "订单明细号", field: 'Name', align: "left", sortable: true, order: "desc", valign: "middle" },
@@ -224,19 +239,52 @@ displayTable("#product-template-attribute-table", "/product/attributeline/", [
         sortable: true,
         order: "desc",
         valign: "middle",
+        cellStyle: { css: { "min-width": "200px" } },
         formatter: function(value, row, index) {
-            var html = "<select class='form-table-product-template-attributte-value'>";
+            var html = "<select class='form-table-product-template-attributte-values'>";
             if (row.AttributeValues && row.AttributeValues.length > 0) {
 
             }
             html += "</select>";
             return html;
         }
+    }, {
+        title: "操作",
+        align: "center",
+        field: 'action',
+        formatter: function cellStyle(value, row, index) {
+            var html = "";
+            var url = "/product/attribute/line/";
+            html += "<a class='form-tree-line-action-remove' href='#'><i class='fa fa-trash-o'></i></a>";
+            return html;
+        }
     }
 
 ], {
     onPostBody: function() {
-        select2AjaxData(".form-table-product-template-attributte", '/product/attribute/?action=search')
+        select2AjaxData(".form-table-product-template-attributte", '/product/attribute/?action=search');
+        select2AjaxData(".form-table-product-template-attributte-values", "/product/attributevalue/?action=search", {
+            queryParams: function(params) {
+                var selectParams = {
+                    name: params.term || "", // search term
+                    offset: (params.page || 0) * LIMIT,
+                    limit: LIMIT,
+                };
+                var xsrf = $("input[name ='_xsrf']");
+                if (xsrf.length > 0) {
+                    selectParams._xsrf = xsrf[0].value;
+                }
+                if ($(this).length > 0 && $(this)[0].nodeName == "SELECT") {
+                    selectParams.exclude = $(this).val();
+                }
+                return selectParams
+            }
+        });
+        formTreeLineActionRemove();
+
+        $(".form-table-product-template-attributte .form-table-product-template-attributte-values").on("change", function(e) {
+            console.log(e)
+        });
     },
     queryParams: function(params) {
         var xsrf = $("input[name ='_xsrf']");
